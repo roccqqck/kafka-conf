@@ -177,7 +177,7 @@ bin/kafka-console-consumer.sh --bootstrap-server hostname:9092 --topic test --fr
 
 ```
 
-注意, `–from-beginning` 引數表示從 topic 的最開始位置進行消費, 如果沒有指定該引數, 表示從末尾開始消費, 只有當啟動消費者後, 有新的資料寫入, 才能夠顯示到控制檯.
+注意, `-from-beginning` 引數表示從 topic 的最開始位置進行消費, 如果沒有指定該引數, 表示從末尾開始消費, 只有當啟動消費者後, 有新的資料寫入, 才能夠顯示到控制檯.
 
 ## 常見錯誤處理
 
