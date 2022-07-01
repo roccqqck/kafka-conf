@@ -78,6 +78,16 @@ Topic: test Partition: 1 Leader: 0 Replicas: 0,1 Isr: 0,1
 Topic: test Partition: 2 Leader: 1 Replicas: 1,2 Isr: 1,2
 ```
 
+
+### **建立topic**
+Kafka 的預設 ```auto.create.topics.enable = true```，加上在 Producer 或是 Consumer 連線至 Kafka 時都需要指定 Topic，因此建立連線當下就會使用預設值建立對應的 Topic
+```
+kafka-topics.sh --create --bootstrap-server {kafka-ip:port} --replication-factor {個數} --partitions {個數} --topic {Topic 名稱}
+```
+
+```
+kafka-topics.sh --create --bootstrap-server {kafka-ip:port} --config {configName=configValue} --replication-factor {個數} --partitions {個數} --topic {Topic 名稱}
+```
 ### **刪除topic**
 
 `bin/kafka-topic.sh`指令碼提供了刪除 topic 的功能. 通過`--delete` 引數和`--topic`引數指定 topic 名稱即可.
@@ -98,7 +108,7 @@ Note: This will have no impact if delete.topic.enable is not set to true.
 ### **修改topic partition**
 partition 數量 只能增加不能減少，就算是指定數量與當下數量一致也會出現錯誤訊息
 ```
-kafka-topics.sh --alter --zookeeper {kafka 位置} --topic {topic 名稱} --partitions {partition 個數}
+kafka-topics.sh --alter --zookeeper {zookeeper-ip:port} --topic {topic 名稱} --partitions {partition 個數}
 ```
 
 
