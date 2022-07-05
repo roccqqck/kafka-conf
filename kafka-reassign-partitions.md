@@ -13,6 +13,16 @@ kafka-topics --describe --zookeeper 127.0.0.1:2181 --topic topicWithThreeBroker
 ```
 vim topics-to-move.json
 ```
+指定一個topic
+```
+{
+  "topics": [
+    {"topic": "topicWithThreeBroker"}
+  ],
+  "version": 1
+}
+```
+指定多個topic
 ```
 {
   "topics": [
@@ -74,4 +84,12 @@ kafka-reassign-partitions.sh --bootstrap-server localhost:9092 --reassignment-js
 ## 6. 最後看一下 topic 是否有重新分配：
 ```
 kafka-topics --describe --zookeeper 127.0.0.1:2181 --topic topicWithThreeBroker
+```
+
+
+
+### 7. 還原原本分割區
+```
+kafka-reassign-partitions.sh --zookeeper localhost:2181 --reassignment-json-file partition_replica_assignment_backup.json --verify
+kafka-reassign-partitions.sh --zookeeper localhost:2181 --reassignment-json-file partition_replica_assignment_backup.json --execute
 ```
