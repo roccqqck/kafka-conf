@@ -93,3 +93,112 @@ kafka-topics --describe --zookeeper 127.0.0.1:2181 --topic topicWithThreeBroker
 kafka-reassign-partitions.sh --zookeeper localhost:2181 --reassignment-json-file partition_replica_assignment_backup.json --verify
 kafka-reassign-partitions.sh --zookeeper localhost:2181 --reassignment-json-file partition_replica_assignment_backup.json --execute
 ```
+
+
+
+
+# 修改某topic的replicas
+如果要增加某topic的replicas
+
+### 1.查看topic one的資訊
+```
+./bin/kafka-topics.sh --bootstrap-server kafka:9092 --describe --topic one
+```
+```ReplicationFactor: 1```
+```
+Topic: one	PartitionCount: 10	ReplicationFactor: 1	Configs: segment.bytes=1073741824
+	Topic: one	Partition: 0	Leader: 1	Replicas: 1	Isr: 1
+	Topic: one	Partition: 1	Leader: 0	Replicas: 0	Isr: 0
+	Topic: one	Partition: 2	Leader: 1	Replicas: 1	Isr: 1
+	Topic: one	Partition: 3	Leader: 0	Replicas: 0	Isr: 0
+	Topic: one	Partition: 4	Leader: 1	Replicas: 1	Isr: 1
+	Topic: one	Partition: 5	Leader: 0	Replicas: 0	Isr: 0
+	Topic: one	Partition: 6	Leader: 1	Replicas: 1	Isr: 1
+	Topic: one	Partition: 7	Leader: 0	Replicas: 0	Isr: 0
+	Topic: one	Partition: 8	Leader: 1	Replicas: 1	Isr: 1
+	Topic: one	Partition: 9	Leader: 0	Replicas: 0	Isr: 0
+```
+
+### 2.寫一個reassignment.json
+
+
+```
+vim increase.json
+```
+```
+{
+ "version":1,
+ "partitions":[
+      {"topic":"one","partition":0,"replicas":[0,1,2]},
+      {"topic":"one","partition":1,"replicas":[0,1,2]},
+      {"topic":"one","partition":2,"replicas":[0,1,2]},
+      {"topic":"one","partition":3,"replicas":[0,1,2]},
+      {"topic":"one","partition":4,"replicas":[0,1,2]},
+      {"topic":"one","partition":5,"replicas":[0,1,2]},
+      {"topic":"one","partition":6,"replicas":[0,1,2]},
+      {"topic":"one","partition":7,"replicas":[0,1,2]},
+      {"topic":"one","partition":8,"replicas":[0,1,2]},
+      {"topic":"one","partition":9,"replicas":[0,1,2]}
+ ]
+}
+```
+或
+```
+cat >>increase.json <<EOF
+{
+ "version":1,
+ "partitions":[
+      {"topic":"one","partition":0,"replicas":[0,1,2]},
+      {"topic":"one","partition":1,"replicas":[0,1,2]},
+      {"topic":"one","partition":2,"replicas":[0,1,2]},
+      {"topic":"one","partition":3,"replicas":[0,1,2]},
+      {"topic":"one","partition":4,"replicas":[0,1,2]},
+      {"topic":"one","partition":5,"replicas":[0,1,2]},
+      {"topic":"one","partition":6,"replicas":[0,1,2]},
+      {"topic":"one","partition":7,"replicas":[0,1,2]},
+      {"topic":"one","partition":8,"replicas":[0,1,2]},
+      {"topic":"one","partition":9,"replicas":[0,1,2]}
+ ]
+}
+EOF
+```
+
+
+
+### 3.執行 increase.json
+確認
+```
+./bin/kafka-reassign-partitions.sh --bootstrap-server kafka:9092 --reassignment-json-file increase.json --verify
+```
+執行
+```
+./bin/kafka-reassign-partitions.sh --bootstrap-server kafka:9092 --reassignment-json-file increase.json --execute
+```
+```
+Current partition replica assignment
+
+{"version":1,"partitions":[{"topic":"one","partition":0,"replicas":[0,1],"log_dirs":["any","any"]},{"topic":"one","partition":1,"replicas":[1,0],"log_dirs":["any","any"]},{"topic":"one","partition":2,"replicas":[0,1],"log_dirs":["any","any"]},{"topic":"one","partition":3,"replicas":[1,0],"log_dirs":["any","any"]},{"topic":"one","partition":4,"replicas":[0,1],"log_dirs":["any","any"]},{"topic":"one","partition":5,"replicas":[1,0],"log_dirs":["any","any"]},{"topic":"one","partition":6,"replicas":[0,1],"log_dirs":["any","any"]},{"topic":"one","partition":7,"replicas":[1,0],"log_dirs":["any","any"]},{"topic":"one","partition":8,"replicas":[0,1],"log_dirs":["any","any"]},{"topic":"one","partition":9,"replicas":[1,0],"log_dirs":["any","any"]}]}
+
+Save this to use as the --reassignment-json-file option during rollback
+Successfully started partition reassignments for one-0,one-1,one-2,one-3,one-4,one-5,one-6,one-7,one-8,one-9
+```
+
+
+### 4.查看topic
+
+```
+./bin/kafka-topics.sh --bootstrap-server kafka:9092 --describe --topic one
+```
+```
+Topic: one	PartitionCount: 10	ReplicationFactor: 2	Configs: segment.bytes=1073741824
+	Topic: one	Partition: 0	Leader: 1	Replicas: 0,1,2	Isr: 2,1,0
+	Topic: one	Partition: 1	Leader: 0	Replicas: 0,1,2	Isr: 2,1,0
+	Topic: one	Partition: 2	Leader: 1	Replicas: 0,1,2	Isr: 2,1,0
+	Topic: one	Partition: 3	Leader: 0	Replicas: 0,1,2	Isr: 2,1,0
+	Topic: one	Partition: 4	Leader: 1	Replicas: 0,1,2	Isr: 2,1,0
+	Topic: one	Partition: 5	Leader: 0	Replicas: 0,1,2	Isr: 2,1,0
+	Topic: one	Partition: 6	Leader: 1	Replicas: 0,1,2	Isr: 2,1,0
+	Topic: one	Partition: 7	Leader: 0	Replicas: 0,1,2	Isr: 2,1,0
+	Topic: one	Partition: 8	Leader: 1	Replicas: 0,1,2	Isr: 2,1,0
+	Topic: one	Partition: 9	Leader: 0	Replicas: 0,1,2	Isr: 2,1,0
+```
